@@ -1,12 +1,11 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from 'lucide-react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import EventParticipation from "@/components/EventParticipation";
 
 interface ParticipateEventProps {
@@ -23,23 +22,19 @@ const ParticipateEvent = ({ onBack }: ParticipateEventProps) => {
     setIsLoading(true);
 
     try {
-      // ここでSupabaseからイベントデータを取得する処理を追加予定
       console.log('Joining event:', eventId);
       
-      // 仮のイベントデータ（実際はSupabaseから取得）
-      const mockEvent = {
-        id: eventId,
-        title: '年末忘年会',
-        description: 'みんなで楽しく忘年会をしましょう！',
-        dateOptions: [
-          '2024-12-20T19:00',
-          '2024-12-21T18:30',
-          '2024-12-22T19:00'
-        ],
-        responses: []
-      };
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
 
-      setCurrentEvent(mockEvent);
+      if (error || !data) {
+        throw new Error('Event not found');
+      }
+
+      setCurrentEvent(data);
       toast.success('イベントに参加しました！');
     } catch (error) {
       toast.error('イベントが見つかりません');

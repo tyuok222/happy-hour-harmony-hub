@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateEventProps {
   onBack: () => void;
@@ -39,20 +39,25 @@ const CreateEvent = ({ onBack }: CreateEventProps) => {
     setIsCreating(true);
 
     try {
-      // ここでSupabaseにデータを保存する処理を追加予定
       const eventData = {
         title: eventTitle,
         description: eventDescription,
-        dateOptions: dateOptions.filter(option => option.trim() !== ''),
-        created_at: new Date().toISOString(),
+        date_options: dateOptions.filter(option => option.trim() !== ''),
       };
 
       console.log('Creating event:', eventData);
       
-      // 仮のイベントID生成（実際はSupabaseで自動生成される）
-      const eventId = Math.random().toString(36).substr(2, 9);
+      const { data, error } = await supabase
+        .from('events')
+        .insert(eventData)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
       
-      toast.success(`飲み会が作成されました！\nイベントID: ${eventId}\n参加者にこのIDを共有してください。`);
+      toast.success(`飲み会が作成されました！\nイベントID: ${data.id}\n参加者にこのIDを共有してください。`);
       
       // リセット
       setEventTitle('');

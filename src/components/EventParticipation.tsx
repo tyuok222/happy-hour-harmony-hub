@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Calendar, Clock, MessageSquare } from 'lucide-react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EventParticipationProps {
   event: any;
@@ -33,16 +33,23 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
 
     try {
       const responseData = {
-        eventId: event.id,
-        participantName,
+        event_id: event.id,
+        participant_name: participantName,
         responses,
         comments,
-        submittedAt: new Date().toISOString(),
       };
 
       console.log('Submitting response:', responseData);
       
-      // ここでSupabaseに回答データを保存する処理を追加予定
+      const { error } = await supabase
+        .from('event_responses')
+        .upsert(responseData, {
+          onConflict: 'event_id,participant_name'
+        });
+
+      if (error) {
+        throw error;
+      }
       
       toast.success('回答を送信しました！');
       onBack();
@@ -121,7 +128,7 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {event.dateOptions.map((dateOption: string, index: number) => {
+              {event.date_options.map((dateOption: string, index: number) => {
                 const { date, time } = formatDateTime(dateOption);
                 return (
                   <div key={index} className="border rounded-lg p-4 space-y-4">
