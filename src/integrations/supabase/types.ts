@@ -53,6 +53,7 @@ export type Database = {
           date_options: Json
           description: string | null
           id: string
+          short_id: string | null
           title: string
           updated_at: string
         }
@@ -61,6 +62,7 @@ export type Database = {
           date_options: Json
           description?: string | null
           id?: string
+          short_id?: string | null
           title: string
           updated_at?: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           date_options?: Json
           description?: string | null
           id?: string
+          short_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -79,7 +82,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_short_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

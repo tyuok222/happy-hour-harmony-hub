@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,10 +25,11 @@ const ParticipateEvent = ({ onBack }: ParticipateEventProps) => {
     try {
       console.log('Joining event:', eventId);
       
+      // 短いIDで検索を試みる
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', eventId)
+        .eq('short_id', eventId)
         .single();
 
       if (error || !data) {
@@ -82,9 +84,12 @@ const ParticipateEvent = ({ onBack }: ParticipateEventProps) => {
                   id="eventId"
                   value={eventId}
                   onChange={(e) => setEventId(e.target.value)}
-                  placeholder="例: abc123def"
+                  placeholder="例: nomi1"
                   required
                 />
+                <p className="text-sm text-gray-600 mt-1">
+                  「nomi」から始まる短いIDを入力してください
+                </p>
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
