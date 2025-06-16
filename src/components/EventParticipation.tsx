@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -272,45 +271,41 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
               </CardHeader>
               <CardContent>
                 {allResponses.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="min-w-[100px]">参加者</TableHead>
-                          {event.date_options.map((dateOption: string, index: number) => {
-                            const { date, time } = formatDateTime(dateOption);
-                            return (
-                              <TableHead key={index} className="text-center min-w-[80px]">
-                                <div className="text-xs">
-                                  <div>{date}</div>
-                                  <div>{time}</div>
+                  <div className="space-y-6">
+                    {allResponses.map((response, responseIndex) => (
+                      <div key={responseIndex} className="border rounded-lg p-4">
+                        <h4 className="font-semibold text-lg mb-3">{response.participant_name}</h4>
+                        
+                        {event.date_options.map((dateOption: string, dateIndex: number) => {
+                          const { date, time } = formatDateTime(dateOption);
+                          const dateResponse = response.responses[dateOption];
+                          const dateComment = response.comments?.[dateOption];
+                          
+                          return (
+                            <div key={dateIndex} className="mb-4 last:mb-0">
+                              <div className="flex items-center justify-between gap-4 mb-2">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="w-4 h-4 text-blue-500" />
+                                  <div>
+                                    <span className="font-medium">{date}</span>
+                                    <span className="text-gray-600 ml-2">{time}</span>
+                                  </div>
                                 </div>
-                              </TableHead>
-                            );
-                          })}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {allResponses.map((response, responseIndex) => (
-                          <TableRow key={responseIndex}>
-                            <TableCell className="font-medium">
-                              {response.participant_name}
-                            </TableCell>
-                            {event.date_options.map((dateOption: string, dateIndex: number) => {
-                              const dateResponse = response.responses[dateOption];
-                              return (
-                                <TableCell 
-                                  key={dateIndex} 
-                                  className={`text-center ${getResponseCellStyle(dateResponse)}`}
-                                >
+                                <div className={`px-3 py-1 rounded-full text-sm font-medium ${getResponseCellStyle(dateResponse)}`}>
                                   {getResponseSymbol(dateResponse)}
-                                </TableCell>
-                              );
-                            })}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                                </div>
+                              </div>
+                              {dateComment && (
+                                <div className="flex items-start gap-2 ml-6 text-sm text-gray-600">
+                                  <MessageSquare className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                  <span>{dateComment}</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center text-gray-500 py-8">
