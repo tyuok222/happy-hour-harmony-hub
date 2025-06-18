@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,6 +42,16 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
     } catch (error) {
       console.error('Error fetching responses:', error);
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ja-JP', { 
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric', 
+      weekday: 'short' 
+    });
   };
 
   const handleResponseChange = (dateOption: string, response: 'available' | 'maybe' | 'unavailable') => {
@@ -186,18 +195,14 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {event.date_options.map((dateOption: string, index: number) => {
-                    const { date, time } = formatDateTime(dateOption);
+                    const formattedDate = formatDate(dateOption);
                     const summary = getDateSummary(dateOption);
                     return (
                       <div key={index} className="border rounded-lg p-4 space-y-4">
                         <div className="flex items-center gap-4">
                           <Calendar className="w-5 h-5 text-blue-500" />
                           <div className="flex-1">
-                            <div className="font-semibold">{date}</div>
-                            <div className="flex items-center gap-1 text-gray-600">
-                              <Clock className="w-4 h-4" />
-                              {time}
-                            </div>
+                            <div className="font-semibold">{formattedDate}</div>
                           </div>
                           <div className="text-sm text-gray-600">
                             ○{summary.available} △{summary.maybe} ×{summary.unavailable}
@@ -278,12 +283,11 @@ const EventParticipation = ({ event, onBack }: EventParticipationProps) => {
                         <TableRow>
                           <TableHead className="min-w-[100px]">参加者</TableHead>
                           {event.date_options.map((dateOption: string, index: number) => {
-                            const { date, time } = formatDateTime(dateOption);
+                            const formattedDate = formatDate(dateOption);
                             return (
                               <TableHead key={index} className="text-center min-w-[120px]">
                                 <div className="text-xs">
-                                  <div>{date}</div>
-                                  <div>{time}</div>
+                                  {formattedDate}
                                 </div>
                               </TableHead>
                             );
